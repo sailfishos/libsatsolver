@@ -1,0 +1,65 @@
+Name: libsatsolver
+Summary: A new approach to package dependency solving
+Version: 0.17.2
+Release: 2
+Group: Software Management/Package Manager
+License: BSD 3-clause (or similar)
+URL: https://gitorious.org/opensuse/sat-solver
+Sources:
+    - satsolver-%{version}.tar.bz2
+Patches:
+    - satsolver-evrcmp.patch
+    - 0002-Add-armv7tnhl-and-armv7thl-support.patch
+    - 0001-Make-libsatsolver-ext-a-versioned-shared-lib.patch
+Description: A new approach to package dependency solving.
+
+PkgBR:
+    - doxygen
+    - db4-devel
+    - perl-devel
+    - fdupes
+    - expat-devel
+    - cmake
+    - gcc-c++
+PkgConfigBR:
+    - rpm
+    - check
+    - zlib
+Configure: none
+Builder: none
+SubPackages:
+    - Name: demo
+      Summary: Applications demoing the satsolver library
+      Group: Software Management/Package Manager
+      License: BSD 3-clause (or similar)
+      Description: Applications demoing the satsolver library.
+      AutoDepend: no
+      Requires:
+          - curl
+          - gnupg2
+
+    - Name: satsolver-tools
+      AsWholeName: yes
+      Summary: A new approach to package dependency solving
+      Group: Software Management/Package Manager
+      License: BSD 3-clause (or similar)
+      Description: A new approach to package dependency solving.
+      AutoDepend: no
+      Requires:
+          - /bin/cp
+          - /bin/gzip
+          - /usr/bin/bzip2
+      Provides:
+          - libsatsolver = %{version}-%{release}
+      Obsoletes:
+          - libsatsolver <= 0.0.15
+
+    - Name: devel
+      Summary: A new approach to package dependency solving
+      Group: Software Management/Package Manager
+      License: BSD 3-clause (or similar)
+      Description: Development files for satsolver, a new approach to package dependency solving
+      Requires:
+          - satsolver-tools = %version
+          - rpm-devel
+

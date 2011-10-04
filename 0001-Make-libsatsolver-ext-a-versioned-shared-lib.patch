@@ -1,0 +1,101 @@
+diff -ruN --exclude='*~' satsolver-0.17.2.orig/ext/CMakeLists.txt satsolver-0.17.2/ext/CMakeLists.txt
+--- satsolver-0.17.2.orig/ext/CMakeLists.txt	2011-09-06 15:58:16.617624989 +0300
++++ satsolver-0.17.2/ext/CMakeLists.txt	2011-09-07 12:59:45.093555996 +0300
+@@ -8,7 +8,11 @@
+     ${libsatsolverext_SRCS} pool_fileconflicts.c repo_rpmdb.c)
+ ENDIF (NOT DEBIAN)
+ 
+-ADD_LIBRARY(satsolverext STATIC ${libsatsolverext_SRCS})
++ADD_LIBRARY(satsolverext SHARED ${libsatsolverext_SRCS})
++SET_TARGET_PROPERTIES(satsolverext PROPERTIES
++        VERSION "${LIBSATSOLVER_MAJOR}.${LIBSATSOLVER_MINOR}"
++        SOVERSION "${LIBSATSOLVER_MAJOR}"
++)
+ 
+ SET(libsatsolverext_HEADERS
+     pool_fileconflicts.h repo_content.h repo_deltainfoxml.h repo_helix.h repo_products.h
+diff -ruN --exclude='*~' satsolver-0.17.2.orig/src/CMakeLists.txt satsolver-0.17.2/src/CMakeLists.txt
+--- satsolver-0.17.2.orig/src/CMakeLists.txt	2011-09-06 15:58:15.298596112 +0300
++++ satsolver-0.17.2/src/CMakeLists.txt	2011-09-07 12:59:45.094556016 +0300
+@@ -18,7 +18,11 @@
+     transaction.c rules.c problems.c
+     chksum.c md5.c sha1.c sha2.c satversion.c)
+ 
+-ADD_LIBRARY(satsolver STATIC ${libsatsolver_SRCS})
++ADD_LIBRARY(satsolver SHARED ${libsatsolver_SRCS})
++SET_TARGET_PROPERTIES(satsolver PROPERTIES
++	VERSION "${LIBSATSOLVER_MAJOR}.${LIBSATSOLVER_MINOR}"
++	SOVERSION "${LIBSATSOLVER_MAJOR}"
++)
+ 
+ SET(libsatsolver_HEADERS
+     bitmap.h evr.h hash.h policy.h poolarch.h poolvendor.h pool.h
+diff -ruN --exclude='*~' satsolver-0.17.2.orig/tests/solver/CMakeLists.txt satsolver-0.17.2/tests/solver/CMakeLists.txt
+--- satsolver-0.17.2.orig/tests/solver/CMakeLists.txt	2011-09-06 15:58:15.318596537 +0300
++++ satsolver-0.17.2/tests/solver/CMakeLists.txt	2011-09-07 12:59:45.094556016 +0300
+@@ -10,7 +10,7 @@
+ 
+ SET(deptestomatic_SOURCES deptestomatic.c)
+ ADD_EXECUTABLE(deptestomatic ${deptestomatic_SOURCES})
+-TARGET_LINK_LIBRARIES(deptestomatic satsolverext satsolver ${EXPAT_LIBRARY} ${ZLIB_LIBRARY})
++TARGET_LINK_LIBRARIES(deptestomatic satsolverext satsolver ${EXPAT_LIBRARY} ${ZLIB_LIBRARY} ${RPMDB_LIBRARY})
+ 
+ install(TARGETS
+ 	deptestomatic
+diff -ruN --exclude='*~' satsolver-0.17.2.orig/tools/CMakeLists.txt satsolver-0.17.2/tools/CMakeLists.txt
+--- satsolver-0.17.2.orig/tools/CMakeLists.txt	2011-09-06 15:58:16.630625274 +0300
++++ satsolver-0.17.2/tools/CMakeLists.txt	2011-09-07 13:05:03.029682692 +0300
+@@ -11,42 +11,42 @@
+ TARGET_LINK_LIBRARIES(rpmdb2solv satsolvertools satsolverext satsolver ${RPMDB_LIBRARY} ${EXPAT_LIBRARY})
+ 
+ ADD_EXECUTABLE(rpms2solv rpms2solv.c)
+-TARGET_LINK_LIBRARIES(rpms2solv satsolvertools satsolverext satsolver ${RPMDB_LIBRARY})
++TARGET_LINK_LIBRARIES(rpms2solv satsolvertools satsolverext satsolver ${RPMDB_LIBRARY} ${EXPAT_LIBRARY})
+ 
+ ADD_EXECUTABLE(findfileconflicts findfileconflicts.c)
+-TARGET_LINK_LIBRARIES(findfileconflicts satsolverext satsolver ${RPMDB_LIBRARY})
++TARGET_LINK_LIBRARIES(findfileconflicts satsolverext satsolver ${RPMDB_LIBRARY} ${EXPAT_LIBRARY})
+ 
+ ENDIF ( NOT DEBIAN )
+ 
+ ADD_EXECUTABLE(rpmmd2solv rpmmd2solv.c)
+-TARGET_LINK_LIBRARIES(rpmmd2solv satsolvertools satsolverext satsolver ${EXPAT_LIBRARY} ${ZLIB_LIBRARY})
++TARGET_LINK_LIBRARIES(rpmmd2solv satsolvertools satsolverext satsolver ${RPMDB_LIBRARY} ${EXPAT_LIBRARY} ${ZLIB_LIBRARY})
+ 
+ ADD_EXECUTABLE(helix2solv helix2solv.c)
+-TARGET_LINK_LIBRARIES(helix2solv satsolvertools satsolverext satsolver ${EXPAT_LIBRARY})
++TARGET_LINK_LIBRARIES(helix2solv satsolvertools satsolverext satsolver ${RPMDB_LIBRARY} ${EXPAT_LIBRARY} ${ZLIB_LIBRARY})
+ 
+ ADD_EXECUTABLE(susetags2solv susetags2solv.c)
+-TARGET_LINK_LIBRARIES(susetags2solv satsolvertools satsolverext satsolver ${ZLIB_LIBRARY})
++TARGET_LINK_LIBRARIES(susetags2solv satsolvertools satsolverext satsolver ${RPMDB_LIBRARY} ${EXPAT_LIBRARY} ${ZLIB_LIBRARY})
+ 
+ ADD_EXECUTABLE(updateinfoxml2solv updateinfoxml2solv.c)
+-TARGET_LINK_LIBRARIES(updateinfoxml2solv satsolvertools satsolverext satsolver ${EXPAT_LIBRARY})
++TARGET_LINK_LIBRARIES(updateinfoxml2solv satsolvertools satsolverext satsolver ${RPMDB_LIBRARY} ${EXPAT_LIBRARY} ${ZLIB_LIBRARY})
+ 
+ ADD_EXECUTABLE(deltainfoxml2solv deltainfoxml2solv.c)
+-TARGET_LINK_LIBRARIES(deltainfoxml2solv satsolvertools satsolverext satsolver ${EXPAT_LIBRARY})
++TARGET_LINK_LIBRARIES(deltainfoxml2solv satsolvertools satsolverext satsolver ${RPMDB_LIBRARY} ${EXPAT_LIBRARY} ${ZLIB_LIBRARY})
+ 
+ ADD_EXECUTABLE(repomdxml2solv repomdxml2solv.c)
+-TARGET_LINK_LIBRARIES(repomdxml2solv satsolvertools satsolverext satsolver ${EXPAT_LIBRARY})
++TARGET_LINK_LIBRARIES(repomdxml2solv satsolvertools satsolverext satsolver ${RPMDB_LIBRARY} ${EXPAT_LIBRARY} ${ZLIB_LIBRARY})
+ 
+ ADD_EXECUTABLE(installcheck installcheck.c)
+-TARGET_LINK_LIBRARIES(installcheck satsolverext satsolver ${EXPAT_LIBRARY} ${ZLIB_LIBRARY})
++TARGET_LINK_LIBRARIES(installcheck satsolverext satsolver ${RPMDB_LIBRARY} ${EXPAT_LIBRARY} ${ZLIB_LIBRARY})
+ 
+ ADD_EXECUTABLE(patchcheck patchcheck.c)
+-TARGET_LINK_LIBRARIES(patchcheck satsolverext satsolver ${EXPAT_LIBRARY} ${ZLIB_LIBRARY})
++TARGET_LINK_LIBRARIES(patchcheck satsolverext satsolver ${RPMDB_LIBRARY} ${EXPAT_LIBRARY} ${ZLIB_LIBRARY})
+ 
+ ADD_EXECUTABLE(dumpsolv dumpsolv.c )
+ TARGET_LINK_LIBRARIES(dumpsolv satsolver)
+ 
+ ADD_EXECUTABLE(mergesolv mergesolv.c )
+-TARGET_LINK_LIBRARIES(mergesolv satsolvertools satsolverext satsolver)
++TARGET_LINK_LIBRARIES(mergesolv satsolvertools satsolverext satsolver ${RPMDB_LIBRARY} ${EXPAT_LIBRARY} ${ZLIB_LIBRARY})
+ 
+ install(TARGETS
+     mergesolv
